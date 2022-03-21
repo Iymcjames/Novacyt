@@ -1,7 +1,9 @@
-﻿namespace NovacytMapIntegration.Models
+﻿using System.Collections.Generic;
+
+namespace NovacytMapIntegration.Models
 {
-    public class Locations
+    public class LocationCollection
     {
-        public IEnumerable<Location> LocationList { get; set; }
+        public IEnumerable<Location> Locations { get; set; }
     }
 }

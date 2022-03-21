@@ -1,8 +1,64 @@
-﻿@{
+﻿@model NovacytMapIntegration.Models.LocationCollection
+
+@{
     ViewData["Title"] = "Home Page";
 }
+<div id="bingeMap" style="position:relative;width:100%;height:500px;"></div>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+<script type='text/javascript'>
+    function renderMap() {
+        var map = new Microsoft.Maps.Map(document.getElementById('bingeMap'), {
+            credentials: 'Alg3AZba7m2aftbpQASOcHi7fsvWDTEsOuAuTz05QS2A57vt1AxLysc-MtpNxIpt',
+            mapTypeId: Microsoft.Maps.MapTypeId.aerial,
+            zoom: 5
+        });
+
+        var infobox = null;
+
+        function addMarker(latitude, longitude, title)
+        {
+            var marker = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(latitude, longitude), { color: 'red' });
+
+            infobox = new Microsoft.Maps.Infobox(marker.getLocation(), {
+                visible : true
+            });
+
+            marker.metadata = {
+                id: 'id',
+                title: title,
+            };
+
+            Microsoft.Maps.Events.addHandler(marker, 'mouseout', hideInfobox);
+            Microsoft.Maps.Events.addHandler(marker, 'mouseover', showInfobox);
+
+            infobox.setMap(map);
+            map.entities.push(marker);
+            marker.setOptions({ enableHoverStyle: true });
+        };
+
+        function showInfobox(e) {
+            if (e.target.metadata) {
+                infobox.setOptions({
+                    location: e.target.getLocation(),
+                    title: e.target.metadata.title,
+                    visible: true
+                });
+            }
+        }
+
+        function hideInfobox(e) {
+            infobox.setOptions({ visible: true });
+        }
+
+        //add markers to map
+        @if (Model.Locations != null)
+        {
+            foreach (var item in Model.Locations)
+            {
+                @:addMarker(@item.Lat, @item.Long, '@item.Title');
+            }
+        }
+    }
+</script>
+<script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?branch=release&callback=renderMap' async defer></script>
